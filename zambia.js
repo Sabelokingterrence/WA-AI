@@ -4,7 +4,7 @@ var parseJson;
 var flag = 0;
 
 wa.create({
-    sessionId: "welo-bot",
+    sessionId: "zambia-bot",
     authTimeout: 60, //wait only 60 seconds to get a connection with the host account device
     blockCrashLogs: true,
     disableSpins: true,
@@ -19,7 +19,7 @@ wa.create({
 function start(client) {
     client.onMessage(async message => {
         flag = 0;
-        fs.readFile('welo.json', function (err, content) {
+        fs.readFile('zambia.json', function (err, content) {
             if (err) throw err;
             parseJson = JSON.parse(content);
             for (var i in parseJson.users) {
@@ -27,17 +27,17 @@ function start(client) {
                     flag = 1;
                     if (parseJson.users[i].order === "1") {
                         parseJson.users[i].order = "2";
-                        client.sendText(message.from, "Hello... Welcome to Welo!\n We are a medical delivery business at your service! \n\n1. Buy and/or deliver my medication \n2. Subscribe to 3/6 months recurring delivery \n3. Collect at Clinic/Hospital \n4. Speak to a consultant.");
+                        client.sendText(message.from, "Hello... Welcome to Welo Rovert Zambia!\n We are a medical delivery business at your service! \n\n1. Buy and/or deliver my medication \n2. Subscribe to 3/6 months recurring delivery \n3. Collect at Clinic/Hospital \n4. Speak to a consultant.");
                     }
                     else if (parseJson.users[i].order === "2") {
-                        
+
                         if (message.body === "1") {
                             parseJson.users[i].order = "3";
-                            client.sendText(message.from, "Please send a picture of your prescription\nCaption it with the pharmacy name\n\n We charge a flat fee of R78(7 km radius) per delivery");
+                            client.sendText(message.from, "Please send a picture of your prescription\nCaption it with the pharmacy name");
                         }
                         else if (message.body === "2") {
                             parseJson.users[i].order = "3";
-                            client.sendText(message.from, "Please send a picture of your prescription\nCaption it with the pharmacy name\n\n We charge a flat fee of R78(7 km radius) per delivery");
+                            client.sendText(message.from, "Please send a picture of your prescription\nCaption it with the pharmacy name");
                             parseJson.users[i].subscription = "1";
                         }
                         else if (message.body === "3") {
@@ -67,19 +67,20 @@ function start(client) {
                         if (message.body === "1") {
                             client.sendText(message.from, "Your order is being processed \nThank you for using Welo");
                             client.sendText("27672291680@c.us", "New order, check bot");
-                            parseJson.users[i].order = "1";                            
+                            parseJson.users[i].order = "1";
+
                         }
                         else if (message.body === "2") {
                             client.sendText(message.from, "Payment link: \n\nhttps://grizzled-pleasant-pearl.glitch.me/ \nReply with your email address so that we can track your payment");
                         }
                     }
                     else if (parseJson.users[i].order === "7") {
-                        client.sendText(message.from, "Your order is being processed \nThank you for using Welo");
+                        client.sendText(message.from, "Your order is being processed \nThank you for using Welo Rovert");
                         client.sendText("27672291680@c.us", "New order, check bot");
                         parseJson.users[i].order = "1";
-  
+
                     }
-                    fs.writeFile('welo.json', JSON.stringify(parseJson), function (err) {
+                    fs.writeFile('zambia.json', JSON.stringify(parseJson), function (err) {
                         if (err) throw err;
                         console.log("done");
                     });
@@ -87,8 +88,8 @@ function start(client) {
             }
             if (flag === 0) {
                 parseJson.users.push({ number: message.from, order: "2", subscription: "0" });
-                client.sendText(message.from, "Hello... Welcome to Welo!\n We are a medical delivery business at your service! \n\n1. Buy and/or deliver my medication \n2. Subscribe to 3/6 months recurring delivery \n3. Collect at Clinic/Hospital \n4. Speak to a consultant.");
-                fs.writeFile('welo.json', JSON.stringify(parseJson), function (err) {
+                client.sendText(message.from, "Hello... Welcome to Welo Rovert Zambia!\n We are a medical delivery business at your service! \n\n1. Buy and/or deliver my medication \n2. Subscribe to 3/6 months recurring delivery \n3. Collect at Clinic/Hospital \n4. Speak to a consultant.");
+                fs.writeFile('zambia.json', JSON.stringify(parseJson), function (err) {
                     if (err) throw err;
                     console.log("done");
                 });
@@ -96,4 +97,3 @@ function start(client) {
         });
     });
 }
-    

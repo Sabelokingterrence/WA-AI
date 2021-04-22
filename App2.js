@@ -1,14 +1,15 @@
 const wa = require('@open-wa/wa-automate');
 const fs = require('fs');
-var flag = 0;
 var parseJson;
+var flag = 0;
 
 wa.create({
-    sessionId: "bot",
+    sessionId: "test-bot",
     authTimeout: 60, //wait only 60 seconds to get a connection with the host account device
     blockCrashLogs: true,
     disableSpins: true,
     headless: true,
+    onChrome: true,
     hostNotificationLang: 'PT_BR',
     logConsole: false,
     popup: true,
@@ -16,81 +17,91 @@ wa.create({
 }).then(client => start(client));
 
 function start(client) {
-    client.onMessage(async message =>
-    {
-        fs.readFile('cars.json', function (err, content)
-        {
+    client.onMessage(async message => {
+        flag = 0;
+        fs.readFile('cars.json', function (err, content) {
             if (err) throw err;
             parseJson = JSON.parse(content);
-            for (var i in parseJson.users)
-            {
-                console.log(parseJson.users[i]);
+            for (var i in parseJson.users) {
                 if (parseJson.users[i].number === message.from) {
-                    if (parseJson.users[i].order === "0") {
-                        flag = 1;
-                        parseJson.users[i].order = "1";
-                    }
-                    else if (parseJson.users[i].order === "1") {
-                        flag = 2;
+                    flag = 1;
+                    if (parseJson.users[i].order === "1") {
+                        client.sendText(message.from, "Hello... Welcome to the Whatsapp Car Service! \n\n1. Look for a car. \n2. Sell my car. \n3. Fix my car \n4. Car Specials \n5. Ready to make purchase");
                         parseJson.users[i].order = "2";
                     }
                     else if (parseJson.users[i].order === "2") {
-                        flag = 3;
-                        parseJson.users[i].order = "0";
+                        if (message.body === "1") {
+                            client.sendText(message.from, "Choose installment range: \n\n1. R0 to R2000 \n1. R2000 to R4000 \n1. R4000 to R6000 \n1. R6000+");
+                            parseJson.users[i].order = "3";
+                        }
+                        else if (message.body === "2") {
+                            client.sendText(message.from, "Please send the most recent picture of your car");
+                            parseJson.users[i].order = "5";
+                        }
+                        else if (message.body === "3") {
+                            client.sendText(message.from, "A consultant will be in touch shortly");
+                            parseJson.users[i].order = "1";
+                        }
+                        else if (message.body === "4") {
+                            client.sendImage(message.from, "./pic4.jpg", "pic4.jpg", "Reply with 1 to make purchase or reply with 2 for previous menu");
+                            parseJson.users[i].order = "4";
+                        }
+                        else if (message.body === "5") {
+                            client.sendText(message.from, "A consultant will be in touch shortly");
+                            parseJson.users[i].order = "1";
+                        }
                     }
+                    else if (parseJson.users[i].order === "3") {
+                        if (message.body === "1") {
+
+                            client.sendImage(message.from, "./pic4.jpg", "pic4.jpg", "Reply with 1 to make purchase or reply with 2 for previous menu");
+                        }
+                        else if (message.body === "2") {
+                            client.sendImage(message.from, "./pic2.jpg", "pic2.jpg", "Reply with 1 to make purchase or reply with 2 for previous menu");
+                        }
+                        else if (message.body === "3") {
+                            client.sendImage(message.from, "./pic3.jpg", "pic3.jpg", "Reply with 1 to make purchase or reply with 2 for previous menu");
+                        }
+                        else if (message.body === "4") {
+                            client.sendImage(message.from, "./pic3.jpg", "pic3.jpg", "Reply with 1 to make purchase or reply with 2 for previous menu");
+                        }
+                        else if (message.body === "5") {
+                            client.sendImage(message.from, "./pic4.jpg", "pic4.jpg", "Reply with 1 to make purchase or reply with 2 for previous menu");
+                        }
+                        parseJson.users[i].order = "4";
+                    }
+                    else if (parseJson.users[i].order === "4") {
+                        if (message.body === "1") {
+                            client.sendText(message.from, "A consultant will be in touch shortly");
+                            parseJson.users[i].order = "1";
+                        }
+                        else if (message.body === "2") {
+                            client.sendText(message.from, "Choose installment range: \n\n1. R0 to R2000 \n1. R2000 to R4000 \n1. R4000 to R6000 \n1. R6000+");
+                            parseJson.users[i].order = "3";
+                        }
+                        else {
+                            client.sendText(message.from, "Hello... Welcome to the Whatsapp Car Service! \n\n1. Look for a car. \n2. Sell my car. \n3. Fix my car \n4. Car Specials \n5. Ready to make purchase");
+                            parseJson.users[i].order = "2";
+                        }
+                    }
+                    else if (parseJson.users[i].order === "5") {
+                        client.sendText(message.from, "We will be in touch shortly with an offer");
+                        parseJson.users[i].order = "1";
+                    }
+                    fs.writeFile('cars.json', JSON.stringify(parseJson), function (err) {
+                        if (err) throw err;
+                        console.log("done");
+                    });
                 }
             }
             if (flag === 0) {
-                parseJson.users.push({ number: message.from, order: "1" });
+                parseJson.users.push({ number: message.from, order: "2", home: "0" });
+                client.sendText(message.from, "Hello... Welcome to the Whatsapp Car Service! \n\n1. Look for a car. \n2. Sell my car. \n3. Fix my car \n4. Car Specials \n5. Ready to make purchase");
+                fs.writeFile('cars.json', JSON.stringify(parseJson), function (err) {
+                    if (err) throw err;
+                    console.log("done");
+                });
             }
-            fs.writeFile('cars.json', JSON.stringify(parseJson), function (err) {
-                if (err) throw err;
-                console.log("done");
-            })
-        })
-        if (flag === 0) {
-            await client.sendText(message.from, "Hi, Im Steve your car consultant. Want me to help you:\n\n1. Buy a car \n2. Sell your car \n3. Fix your car \n4. Car Specials \n5. Speak to consultant");     
-        }
-        else if (flag === 1) {
-            await client.sendText(message.from, "Hi, Im Steve your car consultant. Want me to help you:\n\n1. Buy a car \n2. Sell your car \n3. Fix your car \n4. Car Specials \n5. Speak to consultant");
-        }
-        else if (flag === 2) {
-            if (message.body === "1") {
-                await client.sendText(message.from, "Choose installment range: \n\n1. 0-R2000 \n2. R2000-R4000 \n3. R4000-R7000 \n4. R7000+");
-
-            }
-            else if (message.body === "2") {
-                await client.sendText(message.from, "Send us the specifications of your car");
-
-            }
-            else if (message.body === "3") {
-                await client.sendText(message.from, "Send us your location and we will get back to you");
-
-            }
-            else if (message.body === "4") {
-                await client.sendText(message.from, "Here are some car specials");
-
-            }
-            else if (message.body === "5") {
-                await client.sendText(message.from, "A consultant will be in touch shortly");
-            }
-
-        }
-        else if (flag === 3) {
-            if (message.body === "1") {
-                await client.sendText(message.from, "Here are some car specials");
-            }
-            else if (message.body === "2") {
-                await client.sendText(message.from, "Here are some car specials");
-            }
-            else if (message.body === "3") {
-                await client.sendText(message.from, "Here are some car specials");
-            }
-            else if (message.body === "4") {
-                await client.sendText(message.from, "Here are some car specials");
-            }
-            
-        }
+        });
     });
-    flag = 0;
 }
