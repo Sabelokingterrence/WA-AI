@@ -10,7 +10,7 @@
     "name": ""
   },
   "dependencies": {
-    "@open-wa/wa-automate": "^3.11.3",
+    "@open-wa/wa-automate": "^3.16.1",
     "body-parser": "^1.15.0",
     "bufferutil": "^4.0.2",
     "cookie-parser": "^1.4.0",
